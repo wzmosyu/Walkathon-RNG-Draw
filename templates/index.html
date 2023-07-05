@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&family=Oswald:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Undian berhadiah</title>
+
+    <style>
+      body {
+        min-width: 310px;
+        max-width: 800px;
+        height: 400px;
+        margin: 0 auto;
+        text-align: center;
+        background-color: rgb(255, 222, 193);
+      }
+
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgb(255, 207, 166);
+        padding: 10px;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      header h1 {
+        font-family: "Oswald", sans-serif;
+        font-size: 40px;
+        text-align: left;
+        margin: 0 0 0 50px;
+        flex-grow: 1;
+      }
+
+      header p {
+        font-family: "Fira Sans", sans-serif;
+        color: rgb(145, 51, 51);
+        margin: 0 40px 0 0;
+        text-decoration: none;
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: rgb(255, 255, 255);
+      }
+
+      h2 {
+        font-family: "Fira Sans", sans-serif;
+        color: rgb(78, 13, 5);
+        margin-top: 80px; /* Atur margin-top sesuai kebutuhan */
+        z-index: 999; /* Atur z-index agar lebih tinggi */
+      }
+
+      #status {
+        font-family: "Fira Sans", sans-serif;
+        color: rgb(78, 13, 5);
+        margin-top: 50px; /* Atur margin-top sesuai kebutuhan */
+        z-index: 999; /* Atur z-index agar lebih tinggi */
+      }
+      p {
+        font-family: "Fira Sans", sans-serif;
+        color: rgb(255, 255, 255);
+      }
+
+      .container {
+        grid-template-columns: repeat(5, 1fr);
+        grid-gap: 10px;
+        background-color: rgb(176, 66, 66);
+        padding: 10px;
+        margin: 20px;
+        border-radius: 6px;
+      }
+
+      .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10px;
+      }
+
+      .item img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-bottom: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .status-container {
+        margin-top: 100px;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: rgb(79, 37, 37);
+        color: white;
+        font-family: "Fira Sans", sans-serif;
+        font-size: 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+
+      .button:hover {
+        background-color: rgb(255, 0, 0);
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+
+  <body>
+    <header>
+        <h1>Undian Jalan Sehat</h1>
+        <a href="/aboutus"><p>About Us</p></a>
+    </header>
+    <div class="status-container">
+        <h2>Status device :</h2>
+        <p id="status"></p>
+    </div>
+    <div class="container" id="container">
+        <div id="result">
+            {% if image_url %}
+            <div class="container">
+                {% for url in image_url %}
+                <img src="{{ url_for('static', filename=url) }}" alt="Gambar" width="125" height="125">
+                {% endfor %}
+            </div>
+            {% else %}
+            <p id="device"></p>
+            {% endif %}
+        </div>
+    </div>
+    <button id="button1" onclick="buttonA()" class="button">Undi 1x</button>
+    <button id="button2" onclick="buttonB()" class="button">Undi 10x</button>
+    <button id="button2" onclick="buttonC()" class="button">Reset</button>
+    <script>
+
+        function buttonA(){
+            window.location.href = "/button_a"
+        }
+
+        function buttonB(){
+            window.location.href = "/button_b"
+        }
+
+        function buttonC() {
+            window.location.href = "/button_c";
+        }
+
+        // Fungsi untuk mengubah status PIR
+        function updateDevice() {
+            fetch('/pir/status')
+                .then(response => response.json())
+                .then(data => {
+                    const deviceElement = document.getElementById('device');
+                    deviceElement.textContent = data.status ? 'Kamu Belum melakukan pengundian' : 'Mohon maaf, perangkat belum menyala';
+            });
+        }
+
+        function updateStatus() {
+            fetch('/pir/status')
+                .then(response => response.json())
+                .then(data => {
+                    const statusElement = document.getElementById('status');
+                    statusElement.textContent = data.status ? 'Aktif' : 'Tidak Aktif';
+            });
+
+        }
+
+
+
+        // Panggil fungsi updateStatus secara periodik setiap 1,5 detik
+        setInterval(updateStatus, 1500);
+        setInterval(updateDevice, 1500);      
+    </script>
+</body>
+</html>
+
